@@ -23,9 +23,10 @@
                         }
                         //sql query
                         $sql = "insert into rentbook(id,personId,dateStartRent,dateEndRent) values(?,?,?,?)";
-                        //execute
+                        //get present date
                         date_default_timezone_set('Asia/Ho_Chi_Minh');
                         $currentDateTime = date('Y-m-d');
+                        //bind param
                         $st = $conn->prepare($sql);
                         $st->bind_param("iiss",$rentbook->id,$rentbook->personId,$currentDateTime,$rentbook->dateReturn);
                         $res = $st->execute();
@@ -52,12 +53,40 @@
                         Connection::closeConnection($conn);
                         return $result;
                 }
+                //update rent book
                 static function updateRentBook($rentbook,$id){
+                        $result = ["rescode"=>0,"resdes"=>"Execute Error!"];
 
                 }
                 //delete rentbook
                 static function deleteRentBook($id){
-                        
+                        $result = ["rescode"=>0,"resdes"=>"Execute Error!"];
+                        //connect
+                        $conn = Connection::getConnection();
+                        if($conn === false){
+                                $result = ["rescode"=>0,"resdes"=>"Error Connection!"];
+                                return $result;
+                        }else if($conn->connect_error !== null){
+                                $result = ["rescode"=>0,"resdes"=>"Connect Fail: ".$conn->connect_error];
+                                return $result;
+                        }
+                //sql query
+                        $sql = "delete from rentbook where id=?";
+                        $st = $conn->prepare($sql);
+                        $st->bind_param("i",$id);
+                        $res = $st->execute();
+                        //delete rentbookdetail where have the same rentbook id
+                        RentBookDetailDao::deleteBookDetailByOrderId($id);
+                //check result
+                        if($res === true){
+                                $result = array("rescode"=>1,"resdes"=>"Add Successfully");
+                        }else{
+                                $result =array("rescode"=>0, "resdes"=>$conn->error);
+                        }
+                //Close
+                        $st->close();
+                        Connection::closeConnection($conn);
+                        return $result;
                 }
                 //list rentbook
                 static function getListRentBook($condition){
@@ -77,11 +106,13 @@
                         $sql="";
                         $sql = "select id,personId,dateStartRent,dateEndRent from rentbook ";
                         //sql query date start
-                         $sql .="WHERE dateStartRent >= '".$condition[$conditionkey[2]];
-                         if($condition[$conditionkey[3]] != null){
-                         $sql.="' and dateStartRent < '".$condition[$conditionkey[3]];
-                         }
-                         $sql.="' Limit ".$condition[$conditionkey[0]].",".$condition[$conditionkey[1]].";";
+                        if($condition[$conditionkey[2]] != null){
+                                $sql .="WHERE dateStartRent >= '".$condition[$conditionkey[2]]."'";
+                                if($condition[$conditionkey[3]] != null){
+                                $sql.=" and dateStartRent < '".$condition[$conditionkey[3]]."'";
+                                }
+                        }
+                         $sql.=" order by dateStartRent Limit ".$condition[$conditionkey[0]].",".$condition[$conditionkey[1]].";";
                         //sql query date end
                         $result = $conn->query($sql);
                         //result
@@ -93,7 +124,7 @@
                         }
                         //close connection
                         Connection::closeConnection($conn);
-                        return $result ;
+                        return $result;
                 }
                 static function getTotalNoLimited($condition){
                           //connect
@@ -110,10 +141,13 @@
                         //default sql query
                         $sql = "select * from rentbook ";
                         //sql query date start
-                         $sql .="WHERE dateStartRent >= '".$condition[$conditionkey[2]]."'";
-                         if($condition[$conditionkey[3]] != null){
-                         $sql.=" and dateStartRent < '".$condition[$conditionkey[3]]."';";
-                         }
+                        if($condition[$conditionkey[2]] != null){
+                                $sql .="WHERE dateStartRent >= '".$condition[$conditionkey[2]]."'";
+                                if($condition[$conditionkey[3]] != null){
+                                $sql.=" and dateStartRent < '".$condition[$conditionkey[3]]."'";
+                                }
+                        }
+                        $sql .="  order by dateStartRent";
                         //sql query date end
                         $result = $conn->query($sql);
                         //close connection

@@ -209,6 +209,7 @@
 
         let inputDateStartValue = inputDateStart.value;
         let inputDateEndValue = null;
+
         inputDateStart.addEventListener('change',(e)=>{
                 inputDateStartValue = e.target.value;
                 getListRentBook();
@@ -240,6 +241,18 @@
                                 $("#rentbooks__table tbody").html(result);
                         },
                 })
+        }
+        function deleteRentBook(id){
+                $.ajax({
+                        url:`RentBookAjax.php`,
+                        method:"POST",
+                        data:{action:{name:'delete',id:id}},      
+                        success:(result)=>{
+                                console.log(result);
+                        }
+                })
+                //render rentbook list after detele
+                getListRentBook();
         }
         generatePaginationRentBook();
         function generatePaginationRentBook(){

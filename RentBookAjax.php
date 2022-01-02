@@ -7,7 +7,8 @@ require_once './ObjectDao/BookDao.php';
                 if($_POST['action']["name"] === "rentbook" ){
                       //send array info filter
                       $arrRentBook = RentBookDao::getListRentBook($_POST['action']["dataSend"]);
-                        // var_dump($arrRentBook);
+                //       var_dump($_POST['action']["dataSend"]);
+                //       var_dump($arrRentBook);
                         if($arrRentBook->num_rows == 0){
                                 echo '<div class="position-absolute text-center mx-auto w-100 p-5">
                                 <i class="fas fa-box-open fa-3x" ></i>
@@ -39,10 +40,10 @@ require_once './ObjectDao/BookDao.php';
                 if($_POST['action']["name"] === "pagin"){
                         $arrList = $_POST['action']["dataSend"];
                         $pagePosition = $arrList['pageSize'];
-                        $arr_rent_book = RentBookDao::getTotalNoLimited($_POST['action']["dataSend"]);      
+                        $arr_rent_book = RentBookDao::getTotalNoLimited($_POST['action']["dataSend"]);     
                         if($arr_rent_book > $pagePosition){//5 12 13
-                                $pages2 = $arr_rent_book /(int)$pagePosition+  (($arr_rent_book %  (int)$pagePosition) != 0 ? 1 : 0);
-                                for($i = 1; $i <$pages2;$i++){
+                              $pages2 = $arr_rent_book /(int)$pagePosition+  (($arr_rent_book %  (int)$pagePosition) != 0 ? 1 : 0);
+                                for($i = 1; $i <=$pages2;$i++){
                                         echo '<button class="pagination_item" onclick="goToPageRentBook('. $i.')">';
                                         echo $i;
                                         echo '</button>';
@@ -50,5 +51,10 @@ require_once './ObjectDao/BookDao.php';
                         }  else{
                                 echo "";
                         }
+                }
+                //delete rent book
+                if($_POST['action']['name'] === "delete"){
+                        $id = (int)$_POST['action']['id'];
+                        RentBookDao::deleteRentBook($id);
                 }
         }

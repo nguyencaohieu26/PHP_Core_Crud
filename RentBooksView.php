@@ -14,7 +14,7 @@
                         <div class="container_filter d-flex">
                                 <div class="form-control-custom mr-2">
                                         <label for="">Date Start</label>
-                                        <input type="date" id="filter_date-rentStart" name="dateStart" value="<?php echo $currentDateTime?>">
+                                        <input type="date" id="filter_date-rentStart" name="dateStart" >
                                 </div>
                                 <div class="form-control-custom">
                                         <label for="">Date End</label>
